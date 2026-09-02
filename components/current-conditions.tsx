@@ -19,14 +19,22 @@ import {
   CloudLightning,
   CloudFog,
   Activity,
+  Bookmark,
 } from 'lucide-react';
 
 interface CurrentConditionsProps {
   forecast: Forecast | null;
   isLoading?: boolean;
+  isBookmarked?: boolean;
+  onToggleBookmark?: () => void;
 }
 
-export function CurrentConditions({ forecast, isLoading }: CurrentConditionsProps) {
+export function CurrentConditions({
+  forecast,
+  isLoading,
+  isBookmarked,
+  onToggleBookmark,
+}: CurrentConditionsProps) {
   if (isLoading || !forecast) {
     return (
       <div className="space-y-4">
@@ -65,14 +73,31 @@ export function CurrentConditions({ forecast, isLoading }: CurrentConditionsProp
 
   return (
     <div className="space-y-6">
-      {/* Header with City & Time */}
+      {/* Header with City, Bookmark Toggle & Time */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
               {city.displayName}
             </span>
-            <span className="text-xs px-2.5 py-0.5 rounded-full font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
+
+            {/* Bookmark button */}
+            {onToggleBookmark && (
+              <button
+                onClick={onToggleBookmark}
+                className={`p-1.5 rounded-lg border transition-all flex items-center gap-1 text-xs font-medium ${
+                  isBookmarked
+                    ? 'bg-amber-50 dark:bg-amber-950/40 border-amber-300 dark:border-amber-700 text-amber-600 dark:text-amber-400 shadow-2xs'
+                    : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-400 hover:text-amber-500 hover:border-amber-300 dark:hover:border-amber-700'
+                }`}
+                title={isBookmarked ? 'Remove from bookmarked places' : 'Bookmark this place'}
+              >
+                <Bookmark className={`w-3.5 h-3.5 ${isBookmarked ? 'fill-current text-amber-500' : ''}`} />
+                <span className="text-[11px]">{isBookmarked ? 'Saved' : 'Save'}</span>
+              </button>
+            )}
+
+            <span className="text-xs px-2.5 py-0.5 rounded-full font-medium bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
               Live Station
             </span>
           </div>
@@ -82,24 +107,18 @@ export function CurrentConditions({ forecast, isLoading }: CurrentConditionsProp
           </p>
         </div>
 
-        <div className="flex items-center gap-2 self-start sm:self-auto text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700/60">
-          <Activity className="w-3.5 h-3.5 text-emerald-500 animate-pulse" />
-          <span>Weather-Coupled Atmosphere Engine</span>
+        <div className="flex items-center gap-2 self-start sm:self-auto text-xs text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs">
+          <Activity className="w-3.5 h-3.5 text-emerald-500" />
+          <span>Coupled Atmosphere Engine</span>
         </div>
       </div>
 
       {/* Primary Metrics Grid */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {/* Large Hero AQI Card with Dynamic Glow */}
+        {/* Large Hero AQI Card with Dynamic Severity Styling */}
         <div
-          className={`md:col-span-2 rounded-2xl p-6 bg-gradient-to-br ${theme.bgClass} border ${theme.borderClass} shadow-lg relative overflow-hidden backdrop-blur-md transition-all`}
+          className={`md:col-span-2 rounded-2xl p-6 bg-gradient-to-br ${theme.bgClass} border ${theme.borderClass} shadow-xs relative overflow-hidden backdrop-blur-md transition-all`}
         >
-          {/* Subtle background glow */}
-          <div
-            className="absolute -right-12 -top-12 w-48 h-48 rounded-full blur-3xl opacity-30 pointer-events-none"
-            style={{ backgroundColor: theme.hex }}
-          />
-
           <div className="flex items-start justify-between relative z-10">
             <div>
               <div className="flex items-center gap-2">
@@ -137,8 +156,8 @@ export function CurrentConditions({ forecast, isLoading }: CurrentConditionsProp
               </div>
             </div>
 
-            <div className="p-3 bg-white/40 dark:bg-slate-900/40 rounded-2xl border border-white/20 dark:border-slate-800 backdrop-blur-sm">
-              <Gauge className="w-8 h-8 text-slate-800 dark:text-slate-200" />
+            <div className="p-3 bg-white/60 dark:bg-slate-900/60 rounded-xl border border-white/40 dark:border-slate-800 shadow-2xs">
+              <Gauge className="w-7 h-7 text-slate-800 dark:text-slate-200" />
             </div>
           </div>
 
@@ -147,7 +166,7 @@ export function CurrentConditions({ forecast, isLoading }: CurrentConditionsProp
           </p>
 
           {/* AQI Progress Bar */}
-          <div className="mt-4 pt-3 border-t border-slate-200/50 dark:border-slate-700/50">
+          <div className="mt-4 pt-3 border-t border-slate-200/60 dark:border-slate-700/60">
             <div className="flex justify-between text-[11px] text-slate-500 dark:text-slate-400 mb-1">
               <span>0 Good</span>
               <span>100 Mod</span>
@@ -168,7 +187,7 @@ export function CurrentConditions({ forecast, isLoading }: CurrentConditionsProp
         </div>
 
         {/* Temperature Card */}
-        <div className="glass-card rounded-2xl p-5 flex flex-col justify-between">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col justify-between">
           <div className="flex items-start justify-between">
             <div>
               <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Temperature</span>
@@ -179,12 +198,12 @@ export function CurrentConditions({ forecast, isLoading }: CurrentConditionsProp
                 Feels like {current.apparent_temperature}°C
               </div>
             </div>
-            <div className="p-2.5 bg-amber-50 dark:bg-amber-950/30 rounded-xl">
-              <Thermometer className="w-6 h-6 text-amber-500" />
+            <div className="p-2.5 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700">
+              <Thermometer className="w-5 h-5 text-amber-500" />
             </div>
           </div>
 
-          <div className="pt-3 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
+          <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
             <span>Condition</span>
             <span className="font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
               {renderWeatherIcon(weatherInfo.iconName)}
@@ -194,7 +213,7 @@ export function CurrentConditions({ forecast, isLoading }: CurrentConditionsProp
         </div>
 
         {/* Wind Card */}
-        <div className="glass-card rounded-2xl p-5 flex flex-col justify-between">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col justify-between">
           <div className="flex items-start justify-between">
             <div>
               <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Wind Dynamics</span>
@@ -205,14 +224,14 @@ export function CurrentConditions({ forecast, isLoading }: CurrentConditionsProp
                 Gusts up to {current.wind_gusts} km/h
               </div>
             </div>
-            <div className="p-2.5 bg-blue-50 dark:bg-blue-950/30 rounded-xl">
-              <Wind className="w-6 h-6 text-blue-500" />
+            <div className="p-2.5 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700">
+              <Wind className="w-5 h-5 text-blue-500" />
             </div>
           </div>
 
-          <div className="pt-3 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
+          <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
             <span>Dispersion Capacity</span>
-            <span className="font-semibold text-blue-600 dark:text-blue-400">
+            <span className="font-semibold text-slate-800 dark:text-slate-200">
               {forecast.couplingSummary.dispersionRating}
             </span>
           </div>
@@ -223,7 +242,7 @@ export function CurrentConditions({ forecast, isLoading }: CurrentConditionsProp
       <div>
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-            <ShieldCheck className="w-4 h-4 text-blue-500" />
+            <ShieldCheck className="w-4 h-4 text-slate-700 dark:text-slate-300" />
             Atmospheric Pollutant Concentrations
           </h3>
           <span className="text-xs text-slate-400">WHO & US EPA Baseline Standards</span>
@@ -231,7 +250,7 @@ export function CurrentConditions({ forecast, isLoading }: CurrentConditionsProp
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {/* PM2.5 */}
-          <div className="glass-card rounded-xl p-3.5 border border-slate-200/80 dark:border-slate-800">
+          <div className="bg-white dark:bg-slate-900 rounded-xl p-3.5 border border-slate-200 dark:border-slate-800 shadow-2xs">
             <div className="flex justify-between items-center text-xs text-slate-500 dark:text-slate-400">
               <span className="font-bold text-slate-900 dark:text-slate-100">PM2.5</span>
               <span className="text-[10px] text-slate-400">Fine</span>
@@ -241,15 +260,15 @@ export function CurrentConditions({ forecast, isLoading }: CurrentConditionsProp
             </div>
             <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
               {current.pm2_5 <= POLLUTANT_THRESHOLDS.pm2_5.good ? (
-                <span className="text-emerald-500 font-medium">Within WHO limit</span>
+                <span className="text-emerald-600 dark:text-emerald-400 font-medium">Within WHO limit</span>
               ) : (
-                <span className="text-amber-500 font-medium">Elevated</span>
+                <span className="text-amber-600 dark:text-amber-400 font-medium">Elevated</span>
               )}
             </div>
           </div>
 
           {/* PM10 */}
-          <div className="glass-card rounded-xl p-3.5 border border-slate-200/80 dark:border-slate-800">
+          <div className="bg-white dark:bg-slate-900 rounded-xl p-3.5 border border-slate-200 dark:border-slate-800 shadow-2xs">
             <div className="flex justify-between items-center text-xs text-slate-500 dark:text-slate-400">
               <span className="font-bold text-slate-900 dark:text-slate-100">PM10</span>
               <span className="text-[10px] text-slate-400">Coarse</span>
@@ -259,15 +278,15 @@ export function CurrentConditions({ forecast, isLoading }: CurrentConditionsProp
             </div>
             <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
               {current.pm10 <= POLLUTANT_THRESHOLDS.pm10.good ? (
-                <span className="text-emerald-500 font-medium">Good standard</span>
+                <span className="text-emerald-600 dark:text-emerald-400 font-medium">Good standard</span>
               ) : (
-                <span className="text-amber-500 font-medium">Moderate</span>
+                <span className="text-amber-600 dark:text-amber-400 font-medium">Moderate</span>
               )}
             </div>
           </div>
 
           {/* Ozone O3 */}
-          <div className="glass-card rounded-xl p-3.5 border border-slate-200/80 dark:border-slate-800">
+          <div className="bg-white dark:bg-slate-900 rounded-xl p-3.5 border border-slate-200 dark:border-slate-800 shadow-2xs">
             <div className="flex justify-between items-center text-xs text-slate-500 dark:text-slate-400">
               <span className="font-bold text-slate-900 dark:text-slate-100">Ozone (O₃)</span>
               <span className="text-[10px] text-slate-400">Photochem</span>
@@ -277,15 +296,15 @@ export function CurrentConditions({ forecast, isLoading }: CurrentConditionsProp
             </div>
             <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
               {current.ozone <= POLLUTANT_THRESHOLDS.ozone.good ? (
-                <span className="text-emerald-500 font-medium">Safe range</span>
+                <span className="text-emerald-600 dark:text-emerald-400 font-medium">Safe range</span>
               ) : (
-                <span className="text-amber-500 font-medium">Active</span>
+                <span className="text-amber-600 dark:text-amber-400 font-medium">Active</span>
               )}
             </div>
           </div>
 
           {/* Nitrogen Dioxide NO2 */}
-          <div className="glass-card rounded-xl p-3.5 border border-slate-200/80 dark:border-slate-800">
+          <div className="bg-white dark:bg-slate-900 rounded-xl p-3.5 border border-slate-200 dark:border-slate-800 shadow-2xs">
             <div className="flex justify-between items-center text-xs text-slate-500 dark:text-slate-400">
               <span className="font-bold text-slate-900 dark:text-slate-100">NO₂</span>
               <span className="text-[10px] text-slate-400">Traffic</span>
@@ -294,12 +313,12 @@ export function CurrentConditions({ forecast, isLoading }: CurrentConditionsProp
               {current.nitrogen_dioxide} <span className="text-xs font-normal text-slate-400">µg/m³</span>
             </div>
             <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
-              <span className="text-emerald-500 font-medium">Standard</span>
+              <span className="text-emerald-600 dark:text-emerald-400 font-medium">Standard</span>
             </div>
           </div>
 
           {/* Sulphur Dioxide SO2 */}
-          <div className="glass-card rounded-xl p-3.5 border border-slate-200/80 dark:border-slate-800">
+          <div className="bg-white dark:bg-slate-900 rounded-xl p-3.5 border border-slate-200 dark:border-slate-800 shadow-2xs">
             <div className="flex justify-between items-center text-xs text-slate-500 dark:text-slate-400">
               <span className="font-bold text-slate-900 dark:text-slate-100">SO₂</span>
               <span className="text-[10px] text-slate-400">Industrial</span>
@@ -308,12 +327,12 @@ export function CurrentConditions({ forecast, isLoading }: CurrentConditionsProp
               {current.sulphur_dioxide} <span className="text-xs font-normal text-slate-400">µg/m³</span>
             </div>
             <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
-              <span className="text-emerald-500 font-medium">Standard</span>
+              <span className="text-emerald-600 dark:text-emerald-400 font-medium">Standard</span>
             </div>
           </div>
 
           {/* Carbon Monoxide CO */}
-          <div className="glass-card rounded-xl p-3.5 border border-slate-200/80 dark:border-slate-800">
+          <div className="bg-white dark:bg-slate-900 rounded-xl p-3.5 border border-slate-200 dark:border-slate-800 shadow-2xs">
             <div className="flex justify-between items-center text-xs text-slate-500 dark:text-slate-400">
               <span className="font-bold text-slate-900 dark:text-slate-100">CO</span>
               <span className="text-[10px] text-slate-400">Combustion</span>
@@ -322,16 +341,16 @@ export function CurrentConditions({ forecast, isLoading }: CurrentConditionsProp
               {current.carbon_monoxide} <span className="text-xs font-normal text-slate-400">µg/m³</span>
             </div>
             <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
-              <span className="text-emerald-500 font-medium">Safe</span>
+              <span className="text-emerald-600 dark:text-emerald-400 font-medium">Safe</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Atmospheric Environment Bar */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-white dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200 dark:border-slate-800 text-xs">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 text-xs shadow-2xs">
         <div className="flex items-center gap-3">
-          <Droplets className="w-5 h-5 text-blue-500" />
+          <Droplets className="w-5 h-5 text-slate-600 dark:text-slate-400" />
           <div>
             <div className="text-slate-400">Relative Humidity</div>
             <div className="font-bold text-slate-900 dark:text-white text-sm">{current.humidity}%</div>
@@ -339,7 +358,7 @@ export function CurrentConditions({ forecast, isLoading }: CurrentConditionsProp
         </div>
 
         <div className="flex items-center gap-3">
-          <Compass className="w-5 h-5 text-indigo-500" />
+          <Compass className="w-5 h-5 text-slate-600 dark:text-slate-400" />
           <div>
             <div className="text-slate-400">Atmospheric Pressure</div>
             <div className="font-bold text-slate-900 dark:text-white text-sm">{current.pressure} hPa</div>
@@ -347,7 +366,7 @@ export function CurrentConditions({ forecast, isLoading }: CurrentConditionsProp
         </div>
 
         <div className="flex items-center gap-3">
-          <CloudRain className="w-5 h-5 text-cyan-500" />
+          <CloudRain className="w-5 h-5 text-slate-600 dark:text-slate-400" />
           <div>
             <div className="text-slate-400">Precipitation</div>
             <div className="font-bold text-slate-900 dark:text-white text-sm">{current.precipitation} mm</div>
@@ -355,7 +374,7 @@ export function CurrentConditions({ forecast, isLoading }: CurrentConditionsProp
         </div>
 
         <div className="flex items-center gap-3">
-          <Activity className="w-5 h-5 text-emerald-500" />
+          <Activity className="w-5 h-5 text-slate-600 dark:text-slate-400" />
           <div>
             <div className="text-slate-400">Dominant Pollutant</div>
             <div className="font-bold text-slate-900 dark:text-white text-sm">{current.dominant_pollutant}</div>

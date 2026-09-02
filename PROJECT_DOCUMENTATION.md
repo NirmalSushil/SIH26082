@@ -2,6 +2,7 @@
 ### Project Documentation & Technical Specification
 **Problem Code:** SIH26082  
 **Platform:** Next.js 16 (App Router) • TypeScript • Tailwind CSS • Recharts • Open-Meteo APIs  
+**Default Configuration:** Light Mode Theme • Default City: Mumbai, Maharashtra, India  
 
 ---
 
@@ -26,9 +27,10 @@ Traditional Air Quality Index (AQI) forecasts often treat chemical concentration
 │   ┌────────────────────────────────────────────────────────────────────────┘ │
 │   ▼                                                                          │
 │   [ Coupled Forecast Payload ] ──► [ Interactive Analytical Dashboard ]      │
-│   • Adjusted AQI vs Raw AQI        • Hero AQI & Pollutant Gauges             │
+│   • Adjusted AQI vs Raw AQI        • Hero AQI & Pollutant Spectrum           │
 │   • Factor Impact Breakdown         • Multi-Tab Analytical Charts            │
 │   • Contextual AI Insights          • Health & Outdoor Activity Advisories   │
+│   • Bookmark / Favorites System     • 24-Hour Timeline Reel                  │
 └──────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -89,9 +91,9 @@ Rain droplets scour suspended aerosols (PM2.5, PM10) and soluble gases ($\text{S
 | :--- | :--- | :--- |
 | **Framework** | **Next.js 16.3.4 (App Router)** | Fullstack React framework with Turbopack, Server-Side API routes, and static route optimization. |
 | **Language** | **TypeScript 5 (Strict Mode)** | End-to-end type safety across API clients, data contracts, and component props. |
-| **UI & Styling** | **Tailwind CSS v4 + Vanilla CSS** | Enterprise design tokens, dark/light theme classes, glassmorphism blur effects, and responsive grids. |
+| **UI & Styling** | **Tailwind CSS v4 + Vanilla CSS** | Enterprise design tokens, default light theme with dark mode toggle, and responsive layout. |
 | **Data Visualization** | **Recharts 3.10** | Interactive, composed multi-axis atmospheric charts with custom HTML5 tooltips and reference bands. |
-| **Icons & Assets** | **Lucide React** | Lightweight iconography for weather conditions, pollutant badges, and navigation. |
+| **Icons & Assets** | **Lucide React** | Lightweight iconography for weather conditions, pollutant badges, and bookmarks. |
 | **Data Sources** | **Open-Meteo APIs** | Global, keyless, high-frequency hourly weather forecasts, air quality chemical data, and geocoding. |
 | **Resilience Layer** | **Synthetic Atmospheric Engine** | Built-in fallback generating physical diurnal models if external endpoints encounter transient timeouts. |
 
@@ -99,46 +101,51 @@ Rain droplets scour suspended aerosols (PM2.5, PM10) and soluble gases ($\text{S
 
 ## 5. Key System Features
 
-### 1. Interactive Command & Geolocation Bar
+### 1. Default Focus on Mumbai & Precision Global Search
+* **Default City:** Automatically initializes with real-time conditions for Mumbai, Maharashtra, India.
 * **Instant Typeahead & Autocomplete:** Debounced query matching global cities.
 * **Instant Enter Resolution:** Direct keyboard entry immediately triggers geocoding and forecast retrieval.
-* **Built-in Global City Index:** Instant, zero-latency lookup for 30+ major world metropolitan centers (Delhi, Tokyo, London, Paris, New York, etc.).
+* **Built-in Global City Index:** Instant, zero-latency lookup for 30+ major world metropolitan centers.
 * **Browser GPS Integration:** 1-click device geolocation for instant local atmospheric analysis.
 
-### 2. Real-Time Current Conditions Deck
-* **Dynamic Hero AQI Card:** Visualizes coupled AQI against raw baseline with dynamic glow and severity color coding (US EPA Standard: Good, Moderate, Sensitive, Unhealthy, Very Unhealthy, Hazardous).
+### 2. Favorite Places / Bookmarking System
+* **1-Click Bookmark Action:** Save any city with a dedicated bookmark toggle button.
+* **Persistent Favorites Strip:** Dedicated quick-access chip strip in the control bar for instant switching between favorite locations.
+
+### 3. Real-Time Current Conditions Deck
+* **Dynamic Hero AQI Card:** Visualizes coupled AQI against raw baseline with severity color coding (US EPA Standard).
 * **Full Pollutant Spectrum:** Dedicated telemetry for PM2.5, PM10, Ground Ozone ($\text{O}_3$), Nitrogen Dioxide ($\text{NO}_2$), Sulphur Dioxide ($\text{SO}_2$), and Carbon Monoxide ($\text{CO}$) with WHO standard benchmarks.
 * **Atmospheric Variables:** Live ambient temperature, apparent feels-like temperature, wind velocity & gusts, relative humidity, barometric pressure, and precipitation.
 
-### 3. Multi-Tab Analytical Forecast Dashboard
+### 4. Multi-Tab Analytical Forecast Dashboard
 * **Tab 1 — AQI Coupling Comparison:** Dual-series area/line charts contrasting Raw AQI vs Weather-Adjusted AQI over 12h, 24h, and 48h windows with wind velocity overlays and EPA threshold reference lines.
 * **Tab 2 — Meteorological Drivers:** Correlated multi-axis plot of Temperature, Wind Speed, Relative Humidity, and Precipitation.
 * **Tab 3 — Pollutant Breakdown:** Detailed individual concentration curves for PM2.5, PM10, $\text{O}_3$, and $\text{NO}_2$.
 
-### 4. Meteorological Coupling Diagnostics
+### 5. Meteorological Coupling Diagnostics
 * **Factor Impact Cards:** Numerical delta indicators detailing exact contributions (+/- AQI points) from Wind Dispersion, Rain Scavenging, Thermal Inversions, and Barometric Pressure.
 * **Optimal Activity Window:** Identifies the exact hour with lowest predicted pollution for outdoor exercise.
 * **Peak Pollution Alert:** Identifies periods of maximum diurnal stagnation and traffic emission accumulation.
 
-### 5. 24-Hour Timeline Reel
+### 6. 24-Hour Timeline Reel
 * Smooth, horizontal scrollable hourly reel with weather condition icons, temperatures, and color-coded AQI chips.
 
-### 6. Actionable Health & Lifestyle Guidance
-* Tailored advisory cards for **Outdoor Exercise**, **Vulnerable / Sensitive Groups** (asthma, children, elderly), and **Home Ventilation** (window management vs HEPA filtration).
+### 7. Actionable Health & Lifestyle Guidance
+* Tailored advisory cards for **Outdoor Exercise**, **Vulnerable / Sensitive Groups**, and **Home Ventilation**.
 
-### 7. Enterprise Theme Architecture
-* One-click Dark / Light mode toggle with persistent client-side `localStorage` caching and OS preference synchronization.
+### 8. Enterprise Theme Architecture
+* Default light (white) mode with full dark mode toggle and persistent client-side `localStorage` caching.
 
 ---
 
 ## 6. API Architecture & Data Contracts
 
 ### 1. `/api/geocode` (POST)
-Converts human-readable city names into high-precision geographic coordinates.
+Converts human-readable city names into geographic coordinates with offline fallback.
 ```json
 // Request
 {
-  "query": "New Delhi"
+  "query": "Mumbai"
 }
 
 // Response
@@ -146,16 +153,16 @@ Converts human-readable city names into high-precision geographic coordinates.
   "success": true,
   "data": [
     {
-      "id": 1273294,
-      "name": "New Delhi",
-      "latitude": 28.6139,
-      "longitude": 77.209,
+      "id": 1275339,
+      "name": "Mumbai",
+      "latitude": 19.076,
+      "longitude": 72.8777,
       "country": "India",
-      "admin1": "Delhi",
-      "displayName": "New Delhi, Delhi, India"
+      "admin1": "Maharashtra",
+      "displayName": "Mumbai, Maharashtra, India"
     }
   ],
-  "timestamp": "2026-09-02T09:25:00.000Z"
+  "timestamp": "2026-09-02T09:30:00.000Z"
 }
 ```
 
@@ -164,113 +171,26 @@ Fetches weather and air quality observations, applies the coupling heuristics, a
 ```json
 // Request
 {
-  "latitude": 51.5074,
-  "longitude": -0.1278,
-  "cityName": "London",
-  "country": "United Kingdom"
-}
-
-// Response Structure
-{
-  "success": true,
-  "data": {
-    "city": { "name": "London", "country": "United Kingdom", "latitude": 51.5074, "longitude": -0.1278 },
-    "current": {
-      "aqi": 32,
-      "adjusted_aqi": 28,
-      "delta_aqi": -4,
-      "severity": "Good",
-      "temperature_2m": 17.6,
-      "humidity": 72,
-      "wind_speed": 14.4,
-      "precipitation": 0.0,
-      "pm2_5": 6.8,
-      "pm10": 12.1
-    },
-    "hourly": [ ... 48 forecast hours with factor breakdowns ... ],
-    "couplingSummary": {
-      "dominantFactor": "Brisk surface ventilation (-4 AQI)",
-      "dispersionRating": "Good",
-      "inversionRisk": "Low",
-      "bestHour": { "time": "2026-09-02T15:00", "aqi": 24 },
-      "peakHour": { "time": "2026-09-02T22:00", "aqi": 38 }
-    },
-    "insight": "Brisk surface ventilation (14 km/h) is accelerating pollutant dispersion...",
-    "advisories": [ ... ]
-  }
+  "latitude": 19.076,
+  "longitude": 72.8777,
+  "cityName": "Mumbai",
+  "country": "India"
 }
 ```
 
 ---
 
-## 7. Project File Structure
+## 7. Quick Start & Deployment Guide
 
-```
-air-pollution-forecast/
-├── app/
-│   ├── api/
-│   │   ├── forecast/
-│   │   │   └── route.ts        # Coupled forecast aggregation endpoint
-│   │   └── geocode/
-│   │       └── route.ts        # City geocoding endpoint
-│   ├── favicon.ico             # App icon
-│   ├── globals.css             # Tailwind v4 theme, tokens & glassmorphism
-│   ├── layout.tsx              # Root HTML wrapper & theme initializer
-│   └── page.tsx                # Main dashboard page
-├── components/
-│   ├── current-conditions.tsx  # Hero AQI card & pollutant spectrum
-│   ├── coupling-breakdown.tsx  # Factor delta diagnostics & optimal windows
-│   ├── forecast-chart.tsx      # Multi-tab Recharts visualizer
-│   ├── hourly-timeline.tsx     # 24-hour horizontal forecast reel
-│   ├── insight-panel.tsx       # AI natural language synthesis & health advice
-│   └── search-bar.tsx          # Autocomplete search, GPS & preset pills
-├── lib/
-│   ├── api-clients.ts          # Open-Meteo HTTP clients & offline fallbacks
-│   ├── forecast.ts             # Mathematical coupling engine & heuristics
-│   ├── types.ts                # TypeScript data models & AQI scales
-│   └── utils.ts                # Formatting, WMO weather codes & WHO limits
-├── public/                     # Static media assets
-├── package.json                # Project dependencies & scripts
-├── tsconfig.json               # TypeScript path alias configuration
-├── PROJECT_DOCUMENTATION.md    # Complete technical documentation
-└── README.md                   # Quick-start documentation
-```
-
----
-
-## 8. Quick Start & Deployment Guide
-
-### Prerequisites
-* **Node.js**: v18.17.0 or higher
-* **npm** / **yarn** / **pnpm**
-
-### 1. Installation
 ```bash
-git clone https://github.com/your-org/air-pollution-forecast.git
-cd air-pollution-forecast
+# 1. Install dependencies
 npm install
-```
 
-### 2. Running Locally
-```bash
+# 2. Start development server
 npm run dev
-```
-Open **`http://localhost:3000`** in your browser.
 
-### 3. Production Build
-```bash
+# 3. Production build & run
 npm run build
-npm run start
+npm start
 ```
-
-### 4. Zero-Config Cloud Deployment (Vercel)
-Push this repository to GitHub and import it directly into [Vercel](https://vercel.com). No environment variables or API keys are required for standard operation.
-
----
-
-## 9. Future Roadmap & Scalability
-
-1. **Satellite Remote Sensing Integration:** Ingest Sentinel-5P (TROPOMI) tropospheric column data ($\text{NO}_2, \text{SO}_2, \text{CO}$, aerosol optical depth) to calibrate ground heuristics.
-2. **Physics-Informed Neural Networks (PINNs):** Train lightweight regression models using local meteorological history to fine-tune regional delta coefficients.
-3. **Hyperlocal IoT Sensor Ingestion:** Provide Webhooks for low-cost PM2.5 sensors (e.g., Plantower, PurpleAir) to enable city-block resolution coupled forecasts.
-4. **Push Notification Alerting:** Web Push API integrations for early morning smog warnings and sudden inversion spikes.
+*Access dashboard:* **`http://localhost:3000`**

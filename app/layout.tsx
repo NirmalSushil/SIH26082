@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Air Pollution–Weather Coupled Forecast | Live Atmospheric Dashboard',
+  title: 'ATMOCAST | Air Pollution–Weather Coupled Forecast',
   description:
     'Real-time air quality forecasts coupled with meteorological dynamics (wind dispersion, thermal inversion, rain washout) using scientific heuristics.',
   keywords: [
@@ -21,17 +21,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className="dark">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
             __html: `
               try {
                 const savedTheme = localStorage.getItem('theme');
-                const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+                if (savedTheme === 'dark') {
                   document.documentElement.classList.add('dark');
-                } else if (savedTheme === 'light') {
+                } else {
                   document.documentElement.classList.remove('dark');
                 }
               } catch (e) {}
@@ -39,7 +38,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-screen bg-slate-50 dark:bg-[#080d1a] text-slate-900 dark:text-slate-100 antialiased selection:bg-blue-500 selection:text-white">
+      <body className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased selection:bg-slate-900 selection:text-white dark:selection:bg-slate-100 dark:selection:text-slate-900">
         {children}
       </body>
     </html>
